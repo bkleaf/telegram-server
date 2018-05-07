@@ -1,12 +1,12 @@
 package com.bleaf.telegram.server.torrent.service;
 
 import com.bleaf.telegram.server.torrent.domain.tfreeca.repository.TfreecaRepository;
-import com.bleaf.telegram.server.torrent.domain.tfreeca.service.DownloadService;
+import com.bleaf.telegram.server.torrent.domain.tfreeca.service.TfreecaDownloader;
 import com.bleaf.telegram.server.torrent.model.DownloadBox;
 import com.bleaf.telegram.server.torrent.model.SearchJob;
 import com.bleaf.telegram.server.torrent.model.SearchSite;
 import com.bleaf.telegram.server.torrent.model.SearchStep;
-import com.bleaf.telegram.server.torrent.repository.ResultJobStorage;
+import com.bleaf.telegram.server.torrent.repository.TorrentJobStorage;
 import com.bleaf.telegram.server.torrent.repository.TorrentRopository;
 import com.bleaf.telegram.server.torrent.utility.MessageManager;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -29,20 +25,20 @@ public class TorrentService {
     TfreecaRepository tfreecaRepository;
 
     @Autowired
-    ResultJobStorage resultJobStorage;
+    TorrentJobStorage torrentJobStorage;
 
     @Autowired
-    DownloadService downloadService;
+    TfreecaDownloader tfreecaDownloader;
 
     @Autowired
     MessageManager messageManager;
 
     public SendMessage getResponse(Update update) {
-        String jobId = resultJobStorage.getJobId(
+        String jobId = torrentJobStorage.getJobId(
                 update.getMessage().getFrom().getId(),
                 update.getMessage().getChatId());
 
-        SearchJob searchJob = resultJobStorage.getSearchJob(jobId);
+        SearchJob searchJob = torrentJobStorage.getSearchJob(jobId);
 
         if(searchJob == null) {
             searchJob = new SearchJob();
@@ -50,7 +46,7 @@ public class TorrentService {
             searchJob.setUserId(update.getMessage().getFrom().getId());
             searchJob.setChatId(update.getMessage().getChatId());
 
-            resultJobStorage.storeSearchJob(jobId, searchJob);
+            torrentJobStorage.storeSearchJob(jobId, searchJob);
         }
 
         boolean jobResult = messageManager.parser(
@@ -80,8 +76,17 @@ public class TorrentService {
                 searchJob.setComplate(true);
             }
         } else if(searchJob.getCurrentSearchStep() == SearchStep.DOWNLOAD) {
-            downloadService.download(update.getMessage().getText(), searchJob);
+            TorrentDownloader torrentDownloader = this.getTorrentDownloader(searchJob.getSearchSite());
+
+            boolean result = false;
+            if(torrentDownloader != null) {
+                result = torrentDownloader.download(update.getMessage().getText(), searchJob);
+            }
+
+            searchJob.setComplate(result);
+            torrentJobStorage.remove(jobId);
         }
+
 
         return messageManager.makeSendMessage(searchJob);
     }
@@ -98,5 +103,11 @@ public class TorrentService {
         return null;
     }
 
+    private TorrentDownloader getTorrentDownloader(SearchSite searchSite) {
+        if(searchSite == SearchSite.Tfreeca) {
+            return tfreecaDownloader;
+        }
 
+        return null;
+    }
 }

@@ -4,25 +4,33 @@ telegram:
     token: 361649822:AAGlPqdO3Af8J1hbsuETWx7pdHv1-6FY3Xk
     search:
       limit_size: 30
-      keyword:
-        resolution: 720,1080
-        release: NEXT
+      filter:
+        keywords:
+#          - 720,1080
+#          - NEXT
     download:
-      home: "/Users/bleaf/IdeaProjects/bleaf/torrent/"
+      conditions:
+        - 1080p
+        - 720p
     tfreeca:
       base_url: "http://www.tfreeca22.com"
       search_url: "http://www.tfreeca22.com/board.php"
       download_url: "http://file.filetender.com/Execdownload.php"
-
-#  comixbot:
-#    config:
-#      comix_server_uri: "http://bkleaf.asuscomm.com:52272"
-#      date_path: "/date/"
-#      name_path: "/name/"
-#      range_path: "/range/"
-#      chat_id:
-#      bot_token: "371293715:AAFUeHspRyikd5iTFgfdMyS3aDoF3a1D7JU"
-
+      host: "www.tfreeca2.com"
 
 server:
   port: 8050
+
+spring:
+  profiles:
+    active: win
+
+---
+
+spring:
+  profiles: win
+
+telegram:
+  btor:
+    download:
+      download_home: "D:\\Comix\\torrent"

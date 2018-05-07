@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Slf4j
 @Repository
-public class ResultJobStorage {
+public class TorrentJobStorage {
     Map<String, SearchJob> storage = new HashMap();
 
     public void storeSearchJob(String jobId, SearchJob searchJob) {
@@ -22,5 +22,9 @@ public class ResultJobStorage {
 
     public String getJobId(int userId, long chatId) {
         return (userId + "_" + chatId);
+    }
+
+    public void remove(String jobId) {
+        storage.remove(jobId);
     }
 }

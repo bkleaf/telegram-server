@@ -74,6 +74,7 @@ public class MessageManager {
         }
 
         searchJob.setCurrentSearchStep(SearchStep.DOWNLOAD);
+        searchJob.setSearchSite(searchJob.getResultMap().get(msg).getSearchSite());
         searchJob.setComplate(false);
 
         return true;
@@ -106,6 +107,8 @@ public class MessageManager {
 
                 msg += "작업이 완료 되었습니다. \n";
                 msg += "아래의 List중 하나를 선택하면 다운로드를 시작합니다.";
+            } else {
+                msg += "Torrent file download가 완료 되었습니다.";
             }
         }
 

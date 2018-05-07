@@ -16,6 +16,8 @@ public class TfreecaConfig {
     String baseUrl;
     String downloadUrl;
 
+    String host;
+
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();

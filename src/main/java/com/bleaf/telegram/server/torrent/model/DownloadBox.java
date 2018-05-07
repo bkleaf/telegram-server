@@ -7,5 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class DownloadBox {
     SearchSite searchSite;
+    String fileName;
     String url;
 }

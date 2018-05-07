@@ -1,4 +1,4 @@
-package com.bleaf.telegram.server.torrent.domain.tfreeca.model;
+package com.bleaf.telegram.server.torrent.model;
 
 import java.util.Random;
 

@@ -8,6 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Base64;
+
 @Slf4j
 @SpringBootApplication
 public class TelegramServerApplication implements CommandLineRunner {
@@ -20,6 +22,7 @@ public class TelegramServerApplication implements CommandLineRunner {
 
     @Override
     public void run(String... strings) throws Exception {
-        repository.findByName("무한도전", SearchCategory.ENTER);
+
+
     }
 }
