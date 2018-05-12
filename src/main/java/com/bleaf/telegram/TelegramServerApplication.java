@@ -12,17 +12,8 @@ import java.util.Base64;
 
 @Slf4j
 @SpringBootApplication
-public class TelegramServerApplication implements CommandLineRunner {
+public class TelegramServerApplication {
     public static void main(String[] args) {
         SpringApplication.run(TelegramServerApplication.class, args);
-    }
-
-    @Autowired
-    TfreecaRepository repository;
-
-    @Override
-    public void run(String... strings) throws Exception {
-
-
     }
 }
