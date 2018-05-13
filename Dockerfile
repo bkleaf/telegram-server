@@ -30,11 +30,24 @@ RUN apt-get update && \
 
 RUN apt-get install -y git
 
-RUN mkdir -p /bleaf/src
-
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
+RUN service transmission-daemon stop
 
+RUN rm -f /etc/transmission-daemon/settings.json
+
+RUN mkdir -p /bleaf/src /bleaf/downloads /bleaf/torrents
+
+RUN chown -R debian-transmission:debian-transmission /bleaf/downloads /bleaf/torrents
+
+COPY ./docker/settings.json /etc/transmission-daemon/settings.json
+COPY ./target/telegram-server-0.0.1-SNAPSHOT.jar /bleaf/src/telegram-server.jar
+
+RUN service transmission-daemon start
+
+VOLUME ["/bleaf/downloads", "/bleaf/torrents"]
+
+#ENTRYPOINT ["java","-Dspring.profiles.active=product", "-Djava.security.egd=file:/dev/./urandom","-jar","/bleaf/src/telegram-server.jar"]
 
 #ADD comix-crawler-0.0.1-SNAPSHOT.jar /bleaf/src/comix-crawler.jar
 #
