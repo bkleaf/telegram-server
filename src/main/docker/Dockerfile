@@ -29,7 +29,6 @@ RUN apt-get update && \
     apt-get clean
 
 RUN apt-get install -y git
-RUN apt-get install -y transmission-daemon
 
 RUN mkdir -p /bleaf/src
 
