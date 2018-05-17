@@ -6,9 +6,9 @@ telegram:
       limit_size: 30
       filter:
         keywords:
-          - 720,1080
+#          - 720,1080
     download:
-      conditions:
+      priority:
         - 1080p
         - 720p
     tfreeca:
@@ -18,11 +18,11 @@ telegram:
       host: "www.tfreeca2.com"
 
 server:
-  port: 70221
+  port: 7021
 
 spring:
   profiles:
-    active: win
+    active: mac
 
 ---
 
@@ -35,10 +35,21 @@ telegram:
       download_home: "D:\\Comix\\torrent"
 
 ---
+
+spring:
+  profiles: mac
+
+telegram:
+  btor:
+    download:
+      download_home: "/Users/bleaf/trans/d"
+
+---
+
 spring:
   profiles: product
 
 telegram:
   btor:
     download:
-      download_home: "/bleaf/torrents"
+      download_home: "/data/torrents"

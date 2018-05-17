@@ -1,7 +1,5 @@
 package com.bleaf.telegram.server.torrent.model;
 
-import lombok.Getter;
-
 public enum SearchCategory {
     MOVIE(new String[]{"tmovie"}),
     DRAMA(new String[]{"tdrama"}),
@@ -22,13 +20,20 @@ public enum SearchCategory {
 
     public static SearchCategory getSearchCategory(String keyword) {
         switch (keyword) {
-            case "e" : return MOVIE;
-            case "a" : return DRAMA;
-            case "r" : return ENTER;
-            case "c" : return MUSIC;
-            case "v" : return TV;
-            case "i" : return ANI;
-            default: return null;
+            case "m":
+                return MOVIE;
+            case "d":
+                return DRAMA;
+            case "e":
+                return ENTER;
+            case "s":
+                return MUSIC;
+            case "t":
+                return TV;
+            case "a":
+                return ANI;
+            default:
+                return null;
         }
     }
 

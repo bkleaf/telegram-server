@@ -1,5 +1,6 @@
 package com.bleaf.telegram.server.torrent.service;
 
+import com.bleaf.telegram.server.torrent.domain.handler.TelegramHandler;
 import com.bleaf.telegram.server.torrent.domain.tfreeca.repository.TfreecaRepository;
 import com.bleaf.telegram.server.torrent.domain.tfreeca.service.TfreecaDownloader;
 import com.bleaf.telegram.server.torrent.model.DownloadBox;
@@ -14,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -29,6 +32,9 @@ public class TorrentService {
 
     @Autowired
     TfreecaDownloader tfreecaDownloader;
+
+    @Autowired
+    TelegramHandler telegramHandler;
 
     @Autowired
     MessageManager messageManager;
@@ -47,6 +53,23 @@ public class TorrentService {
             searchJob.setChatId(update.getMessage().getChatId());
 
             torrentJobStorage.storeSearchJob(jobId, searchJob);
+        }
+
+        SearchStep searchStep = SearchStep.getStep(
+                update.getMessage().getText());
+
+        //일반 대화라 판단
+        if(searchJob.getCurrentSearchStep() == null
+                && searchStep == SearchStep.DOWNLOAD) {
+            return null;
+        }
+
+        searchJob.setCurrentSearchStep(searchStep);
+
+        if(searchStep == SearchStep.HELP) {
+            searchJob.setComplate(true);
+
+            return messageManager.makeSendMessage(searchJob);
         }
 
         boolean jobResult = messageManager.parser(
@@ -84,11 +107,32 @@ public class TorrentService {
             }
 
             searchJob.setComplate(result);
-            torrentJobStorage.remove(jobId);
         }
 
 
         return messageManager.makeSendMessage(searchJob);
+    }
+
+    public void downloadComplate(String msg) {
+
+        SearchJob searchJob = torrentJobStorage.getDownloadChectId(msg);
+        if(searchJob != null) {
+            SendMessage sendMessage = new SendMessage();
+
+            log.info("다운로드 완료 공지 = {}", searchJob.getChatId());
+
+            sendMessage.setChatId(searchJob.getChatId());
+            sendMessage.setText(msg + " 다운로드가 완료 되었습니다.");
+
+            try {
+                telegramHandler.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        } else {
+            log.error("해당하는 다운로드 작업이 없습니다. = {}", msg);
+        }
+
     }
 
     private TorrentRopository[] getTorrentRepository(SearchSite searchSite) {

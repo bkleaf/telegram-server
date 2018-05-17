@@ -7,6 +7,7 @@ import com.bleaf.telegram.server.torrent.domain.tfreeca.utility.TfreecaUtils;
 import com.bleaf.telegram.server.torrent.model.DownloadBox;
 import com.bleaf.telegram.server.torrent.model.SearchJob;
 import com.bleaf.telegram.server.torrent.service.TorrentDownloader;
+import com.google.common.io.Files;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -50,6 +51,11 @@ public class TfreecaDownloader implements TorrentDownloader {
 
         try {
             for (DownloadBox box : downloadBoxes) {
+                if(box.getFileName().toLowerCase().endsWith("torrent")) {
+                    searchJob.setDownloadFileName(
+                            Files.getNameWithoutExtension(box.getFileName()));
+                }
+
                 this.fileDownload(id, box);
             }
         } catch (Exception e) {

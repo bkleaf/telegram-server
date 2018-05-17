@@ -121,6 +121,7 @@ public class TfreecaRepository implements TorrentRopository {
         String fileName;
         for (Element row : rows) {
             fileName = row.text();
+            log.debug("download file name = {}", fileName);
             if (Strings.isNullOrEmpty(fileName)) {
                 continue;
             }
@@ -128,12 +129,19 @@ public class TfreecaRepository implements TorrentRopository {
             elements.add(row);
         }
 
-        Element subtitle = this.getSubtitleFileName(elements);
+        Element torrent = elements.get(0);
+        Element subtitle = null;
+        if(elements.size() > 1) {
+            subtitle = this.getSubtitleFileName(elements);
 
-        List<String> conditions = Lists.newArrayList(torrentConfig.getConditions());
-        conditions.add(0, Files.getNameWithoutExtension(subtitle.text()));
+            List<String> conditions = Lists.newArrayList(torrentConfig.getPriority());
 
-        Element torrent = this.getTorrentRow(elements, conditions, 0);
+            if(subtitle != null) {
+                conditions.add(0, Files.getNameWithoutExtension(subtitle.text()));
+            }
+
+            torrent = this.getTorrentRow(elements, conditions, 0);
+        }
 
         List<DownloadBox> downloadBoxes = new ArrayList();
 
@@ -141,9 +149,13 @@ public class TfreecaRepository implements TorrentRopository {
         String id = tfreecaUtils.getContentId(detailUrl);
         for (int i = 0; i < elements.size(); i++) {
             if (torrent.text().equals(elements.get(i).text())
-                    || subtitle.text().equals(elements.get(i).text())) {
+                    || (subtitle != null && subtitle.text().equals(elements.get(i).text()))) {
 
-                downloadBoxes.add(new DownloadBox(SearchSite.Tfreeca, elements.get(i).text(), tfreecaUtils.getDownloadUrl(b_id, id, i)));
+                downloadBoxes.add(
+                        new DownloadBox(
+                                SearchSite.Tfreeca,
+                                elements.get(i).text(),
+                                tfreecaUtils.getDownloadUrl(b_id, id, i)));
             }
         }
 
@@ -189,7 +201,7 @@ public class TfreecaRepository implements TorrentRopository {
             }
         }
 
-        log.debug("subtitle file name = {}", result.text());
+        log.debug("subtitle file name = {}", result);
 
         return result;
     }

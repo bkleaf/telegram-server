@@ -15,6 +15,6 @@ public class TorrentConfig {
 //    @Value("${telegram.btor.download.home}")
     String downloadHome;
 
-//    @Value("${telegram.btor.download.conditions}")
-    String[] conditions;
+//    @Value("${telegram.btor.download.priority}")
+    String[] priority;
 }

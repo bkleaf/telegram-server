@@ -1,12 +1,12 @@
 package com.bleaf.telegram.server.torrent.model;
 
 public enum SearchKeyword {
-    e,              // move
-    a,              // drama
-    r,              // entertainment
-    c,              // music
-    v,              // tv
-    i;              // ani
+    m,              // movie
+    d,             // drama
+    e,              // entertainment
+    s,              // music
+    t,               // tv
+    a;              // ani
 
     public static boolean contains(String keyword) {
         for(SearchKeyword searchKeyword : SearchKeyword.values()) {

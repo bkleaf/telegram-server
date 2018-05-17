@@ -1,0 +1,10 @@
+telegram:
+  btor:
+    name: btor_bot
+    token: 361649822:AAGlPqdO3Af8J1hbsuETWx7pdHv1-6FY3Xk
+#    search:
+#      limit_size: 30
+#    download:
+#      priority:
+#        - 1080p
+#        - 720p

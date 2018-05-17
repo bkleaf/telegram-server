@@ -26,33 +26,29 @@ RUN apt-get update && \
     apt-get update && \
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections && \
     apt-get install -y oracle-java8-installer && \
+    apt-get install -y transmission-daemon && \
+    apt-get install -y curl && \
     apt-get clean
-
-RUN apt-get install -y git
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 
 RUN service transmission-daemon stop
 
-RUN rm -f /etc/transmission-daemon/settings.json
+RUN mv /etc/transmission-daemon/settings.json /etc/transmission-daemon/settings.json.old
 
-RUN mkdir -p /bleaf/src /bleaf/downloads /bleaf/torrents
+RUN mkdir -p /data/src /data/downloads /data/torrents /data/config /data/logs
 
-RUN chown -R debian-transmission:debian-transmission /bleaf/downloads /bleaf/torrents
+RUN chown -R debian-transmission:debian-transmission /data
 
 COPY ./docker/settings.json /etc/transmission-daemon/settings.json
-COPY ./target/telegram-server-0.0.1-SNAPSHOT.jar /bleaf/src/telegram-server.jar
+COPY ./docker/run.sh /data/src/
+COPY ./docker/torrent_push.sh /data/src/
+COPY ./target/telegram-server-0.0.1-SNAPSHOT.jar /data/src/telegram-server.jar
 
-RUN service transmission-daemon start
+RUN chmod +x /data/src/run.sh /data/src/torrent_push.sh
 
-VOLUME ["/bleaf/downloads", "/bleaf/torrents"]
+VOLUME ["/data/downloads", "/data/torrents", "/data/config", "/data/logs"]
 
-#ENTRYPOINT ["java","-Dspring.profiles.active=product", "-Djava.security.egd=file:/dev/./urandom","-jar","/bleaf/src/telegram-server.jar"]
+ENTRYPOINT ["sh","/data/src/run.sh"]
 
-#ADD comix-crawler-0.0.1-SNAPSHOT.jar /bleaf/src/comix-crawler.jar
-#
-#VOLUME ["/bleaf/comix/download","/bleaf/comix/service"]
-#
-#ENTRYPOINT ["java","-Dspring.profiles.active=product", "-Djava.security.egd=file:/dev/./urandom","-jar","/bleaf/src/comix-crawler.jar"]
-#
-#EXPOSE 52272
+EXPOSE 9091 7021

@@ -8,14 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
-import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Slf4j
@@ -30,16 +24,25 @@ public class TelegramHandler extends TelegramLongPollingBot {
     @Value("${telegram.btor.token}")
     String token;
 
+    // chat id : 266254817
+    // token : 361649822:AAGlPqdO3Af8J1hbsuETWx7pdHv1-6FY3Xk
+    // chat bot : btor_bot
     @Override
     public void onUpdateReceived(Update update) {
-        log.info("test receive = {}\n {}\n {}\n", update, update.getMessage().getChatId().toString(), update.getMessage().getText());
+        log.debug("test receive = {}\n {}\n {}\n", update, update.getMessage().getChatId().toString(), update.getMessage().getText());
+        log.info("telegram message = {} : {} : {}",
+                update.getMessage().getChatId(),
+                update.getMessage().getFrom().getFirstName(),
+                update.getMessage().getText());
 
         SendMessage message = torrentService.getResponse(update);
 
-        try {
-            execute(message); // Sending our message object to user
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+        if(message != null) {
+            try {
+                execute(message); // Sending our message object to user
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
     }
 

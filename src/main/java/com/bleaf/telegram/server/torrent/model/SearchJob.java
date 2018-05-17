@@ -19,6 +19,8 @@ public class SearchJob {
 
     Map<String, DownloadBox> resultMap;
 
+    String downloadFileName;
+
     boolean isComplate;
 
     public List<String> getResultList() {
